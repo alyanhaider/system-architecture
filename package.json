@@ -1,0 +1,33 @@
+{
+  "name": "@alyanhaider/system-architecture",
+  "version": "1.0.0",
+  "description": "Production-grade AI agent skills for Cursor, VS Code, and Copilot",
+  "main": "bin/cli.js",
+  "bin": {
+    "ai-skills": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alyanhaider/system-architecture.git"
+  },
+  "keywords": [
+    "cursor",
+    "cursorrules",
+    "ai",
+    "copilot",
+    "skills",
+    "development"
+  ],
+  "author": "Alyan Haider",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alyanhaider/system-architecture/issues"
+  },
+  "homepage": "https://github.com/alyanhaider/system-architecture#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
