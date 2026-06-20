@@ -1,145 +1,138 @@
-# 🤖 Agent Rules — How to Use These Skills
+# 🤖 Agent Rules — Automatic Skill Activation System
 
-This file tells an AI coding agent (Cursor, Claude, GitHub Copilot, etc.) **when and how** to load and apply the skill documents in this repository. Follow these rules exactly.
-
----
-
-## Core Principle
-
-These skills exist because AI agents make the same high-cost mistakes repeatedly — using `*` for CORS origins, storing tokens in localStorage, skipping pagination, collapsing controller and service logic. Each skill is a targeted correction for a specific mistake pattern. **Read the relevant skill before writing any code in that area.**
+This file is the **entry point** for your AI coding agent. It defines how the agent must behave before writing any code. The agent must follow these rules automatically — the user does not need to mention skills, domains, or rules. The agent detects the context and loads what is needed.
 
 ---
 
-## Rule 1 — Identify the Active Skill Domain
+## ⚡ How This Works
 
-Before writing code, check whether the task touches any of the following domains. If yes, **load and read that skill file first**.
+Every time the user sends a message, the agent must:
 
-| Task involves... | Load this skill |
+1. **Silently scan** the user's request for keywords, intent, and domain signals.
+2. **Identify all matching skill domains** from the table below.
+3. **Read every matching `skill.md` file in full** before writing any code or giving any advice.
+4. **Apply the skill's rules** — the skill supersedes the agent's training defaults.
+
+The user never needs to say "load a skill", "use the auth skill", or "follow the rules". The agent handles this transparently, every time.
+
+---
+
+## 🗺️ Automatic Skill Trigger Map
+
+The agent must load the corresponding skill file the moment it detects any of the listed keywords or task types in the user's input. Multiple skills must be loaded when multiple domains are touched.
+
+| If the user's message involves any of these... | Load this skill file |
 |---|---|
-| API routes, endpoints, HTTP verbs, status codes, response shape, error handling, logging, pagination | `skills/api-design-and-responses/skill.md` |
-| Login, signup, logout, password reset, tokens, sessions, cookies, JWT, OAuth, "Login with Google" | `skills/authentication-security/skill.md` |
-| Folder structure, where a file goes, adding a new feature, project layout, layer separation | `skills/project-structure/skill.md` |
-| Route/controller/service/model split, backend file organization, third-party integrations folder | `skills/backend-architecture/skill.md` |
-| CORS errors, `Access-Control-Allow-Origin`, cross-origin, frontend calling backend, preflight | `skills/cors-configuration/skill.md` |
-| Database schema, tables, relationships, indexes, migrations, query patterns, foreign keys | `skills/database-design/skill.md` |
-| Caching, Redis, background jobs, queues, workers, scheduled tasks | `skills/caching-and-background-jobs/skill.md` |
-| CI/CD, deployment, Docker, environment variables, Railway/Render/Vercel/AWS setup | `skills/deployment-pipeline/skill.md` |
-| File uploads, multipart/form-data, S3/cloud storage, file validation, size limits | `skills/file-uploads-and-storage/skill.md` |
-| Monorepo, multirepo, workspace, Turborepo, nx, package linking | `skills/monorepo-vs-multirepo/skill.md` |
-| Slow queries, performance, profiling, lazy loading, N+1, bundle size | `skills/performance-optimization/skill.md` |
-| SQL injection, input sanitization, rate limiting, security headers, XSS, CSRF | `skills/security-hardening/skill.md` |
+| `login`, `signup`, `logout`, `password`, `reset password`, `token`, `JWT`, `session`, `cookie`, `OAuth`, `Google login`, `GitHub login`, `protected route`, `remember me`, `auth`, `authentication`, `authorization` | `skills/authentication-security/skill.md` |
+| `endpoint`, `route`, `REST`, `API`, `status code`, `response shape`, `error handling`, `pagination`, `validation`, `logging`, `404`, `401`, `403`, `500`, `JSON response`, `request body`, `add a route`, `add an endpoint` | `skills/api-design-and-responses/skill.md` |
+| `CORS`, `cross-origin`, `blocked by CORS`, `Access-Control-Allow-Origin`, `preflight`, `credentials mode`, `frontend can't call backend`, `OPTIONS request` | `skills/cors-configuration/skill.md` |
+| `folder structure`, `where should I put`, `how should I structure`, `project layout`, `feature folder`, `project is getting messy`, `add a new feature`, `organize files`, `architecture` | `skills/project-structure/skill.md` |
+| `controller`, `service`, `model`, `repository`, `layer separation`, `integrations folder`, `third-party`, `business logic`, `route handler`, `backend structure` | `skills/backend-architecture/skill.md` |
+| `schema`, `table`, `migration`, `index`, `foreign key`, `relationship`, `query`, `ORM`, `Prisma`, `MySQL`, `PostgreSQL`, `SQLite`, `MongoDB`, `database design` | `skills/database-design/skill.md` |
+| `cache`, `Redis`, `queue`, `worker`, `background job`, `BullMQ`, `cron`, `scheduled task`, `job processor`, `retry`, `async job` | `skills/caching-and-background-jobs/skill.md` |
+| `deploy`, `CI/CD`, `Docker`, `Dockerfile`, `Railway`, `Render`, `Vercel`, `AWS`, `environment variable`, `.env`, `pipeline`, `staging`, `production`, `container` | `skills/deployment-pipeline/skill.md` |
+| `file upload`, `upload`, `multipart`, `form-data`, `S3`, `R2`, `cloud storage`, `image upload`, `attachment`, `file size`, `file type`, `presigned URL` | `skills/file-uploads-and-storage/skill.md` |
+| `monorepo`, `multirepo`, `workspace`, `Turborepo`, `nx`, `shared packages`, `pnpm workspace`, `yarn workspace`, `package linking` | `skills/monorepo-vs-multirepo/skill.md` |
+| `slow`, `performance`, `N+1`, `optimize`, `lazy load`, `bundle size`, `profiling`, `lighthouse`, `query speed`, `too many queries`, `load time` | `skills/performance-optimization/skill.md` |
+| `SQL injection`, `sanitize`, `rate limit`, `XSS`, `CSRF`, `security headers`, `helmet`, `input validation`, `injection`, `prototype pollution`, `CSP`, `secure headers` | `skills/security-hardening/skill.md` |
 
 ---
 
-## Rule 2 — Multiple Skills May Apply
+## 🔁 When Multiple Skills Apply
 
-A single task often touches more than one skill. Example: "Add a login endpoint" touches **authentication-security** AND **api-design-and-responses** AND **project-structure**. Load all relevant skills before starting.
+A single user request often touches more than one domain. The agent must load **all** relevant skills — never just one.
 
----
+**Examples of multi-skill situations:**
 
-## Rule 3 — Trigger Words
-
-Load the appropriate skill when any of these phrases appear in a request:
-
-**Authentication:** `auth`, `login`, `signup`, `logout`, `token`, `JWT`, `session`, `cookie`, `password`, `OAuth`, `Google login`, `protected route`, `remember me`
-
-**API Design:** `endpoint`, `route`, `REST`, `status code`, `response`, `error handling`, `pagination`, `validation`, `logging`, `404`, `401`, `500`
-
-**CORS:** `CORS`, `cross-origin`, `blocked by CORS`, `Access-Control`, `preflight`, `credentials mode`, `frontend can't call backend`
-
-**Project Structure:** `where should I put`, `how should I structure`, `project is getting messy`, `add a new feature`, `folder structure`, `architecture`
-
-**Backend Architecture:** `controller`, `service`, `model`, `layer`, `separation`, `integrations`, `third-party`
-
-**Database:** `schema`, `migration`, `index`, `foreign key`, `relationship`, `query`, `ORM`, `Prisma`, `MySQL`, `PostgreSQL`
-
-**Security:** `injection`, `sanitize`, `rate limit`, `XSS`, `CSRF`, `headers`, `helmet`, `validation`
-
-**Deployment:** `deploy`, `CI/CD`, `Docker`, `Railway`, `Render`, `Vercel`, `environment variable`, `.env`, `pipeline`
-
-**Caching:** `cache`, `Redis`, `queue`, `worker`, `background job`, `BullMQ`, `cron`
-
-**Performance:** `slow`, `N+1`, `optimize`, `lazy load`, `bundle size`, `profiling`, `lighthouse`
-
-**File Uploads:** `upload`, `file`, `multipart`, `S3`, `cloud storage`, `image`, `attachment`
-
-**Monorepo:** `monorepo`, `multirepo`, `workspace`, `Turborepo`, `nx`, `shared packages`
+- *"Add a login endpoint"* → load `authentication-security` + `api-design-and-responses` + `backend-architecture`
+- *"Set up file uploads to S3"* → load `file-uploads-and-storage` + `security-hardening` + `deployment-pipeline`
+- *"Add a job queue for sending emails"* → load `caching-and-background-jobs` + `backend-architecture`
+- *"I'm getting CORS errors on my login request"* → load `cors-configuration` + `authentication-security`
+- *"My list endpoint is slow"* → load `performance-optimization` + `api-design-and-responses` + `database-design`
 
 ---
 
-## Rule 4 — How to Apply a Skill
+## 🚦 Proactive Loading — Do Not Wait for Explicit Signals
 
-1. **Read the entire skill file** before writing any code for that domain
-2. **Follow the "one-paragraph brief"** at the end of each skill — this is the minimum contract for that domain
-3. **Do not skip the "Common AI Blunders" section** — these are real mistakes you are likely to make
-4. **Use the starter prompts** provided in each skill when setting up a new system in that domain
-5. **Do not override skill instructions** with your own defaults — the skill supersedes your training defaults
+The agent must load skills **proactively** even when the user hasn't used an exact trigger word, if the intent is clear:
 
----
-
-## Rule 5 — Proactive Skill Loading
-
-Do not wait to be told which skill applies. Load relevant skills **proactively** when:
-
-- Starting any new backend feature
-- Touching any auth-related code (even a small change)
-- Adding any new route or endpoint
-- Changing folder structure or file locations
-- Connecting a frontend to a backend
-- Setting up any deployment pipeline
+- Starting or modifying any backend feature → load `backend-architecture` + `project-structure`
+- Touching any auth-related code, even a small change → load `authentication-security`
+- Adding or modifying any API route → load `api-design-and-responses`
+- Connecting a frontend to a backend → load `cors-configuration`
+- Setting up a deployment or environment → load `deployment-pipeline`
+- Discussing or changing database schema → load `database-design`
+- Any security-adjacent discussion → load `security-hardening`
 
 **Small changes break security and consistency just as much as large ones.**
 
 ---
 
-## Rule 6 — When You Are Unsure
+## 📖 How to Apply a Loaded Skill
 
-If a task doesn't clearly map to one skill, default to loading:
-1. `skills/project-structure/skill.md` — to get the file placement right
-2. `skills/api-design-and-responses/skill.md` — if any HTTP endpoints are involved
+Once the agent has identified and loaded the relevant skill file(s):
 
----
-
-## Rule 7 — Skill Files Are Read-Only
-
-Do not modify `skill.md` files. They are the source of truth. If you need to add project-specific overrides, the user will create a separate instruction file alongside the skill.
+1. **Read the entire `skill.md` file** — do not skim it.
+2. **Follow the "one-paragraph brief"** at the end of each skill — this is the minimum non-negotiable contract.
+3. **Do not skip the "Common AI Blunders" section** — these are real mistakes the agent is likely to reproduce.
+4. **Use the code examples** in the skill when implementing the feature.
+5. **Do not override skill instructions** with training defaults — the skill supersedes defaults in every case.
 
 ---
 
-## Quick Reference — Skill Trigger Map
+## 🆘 Fallback Rule — When Unsure
 
-```
-User mentions...                 → Load skill
-─────────────────────────────────────────────────────
-login / auth / token / cookie    → authentication-security
-CORS / cross-origin / preflight  → cors-configuration
-endpoint / route / status code   → api-design-and-responses
-folder / structure / where to put → project-structure
-controller / service / model     → backend-architecture
-schema / migration / index       → database-design
-cache / Redis / queue / worker   → caching-and-background-jobs
-deploy / Docker / CI-CD / .env   → deployment-pipeline
-upload / S3 / multipart / file   → file-uploads-and-storage
-monorepo / workspace / Turborepo → monorepo-vs-multirepo
-slow / N+1 / optimize / profile  → performance-optimization
-injection / XSS / sanitize / CSP → security-hardening
-```
+If the user's request doesn't clearly map to a skill, default to:
+
+1. `skills/project-structure/skill.md` — to get file placement right
+2. `skills/api-design-and-responses/skill.md` — if any HTTP communication is involved
 
 ---
 
-## Checklist Before Submitting Any Code
+## 🔒 Skill Files Are Read-Only
+
+The agent must **never modify `skill.md` files**. They are the source of truth. Project-specific overrides must go in a separate instruction file alongside the skill, created by the user.
+
+---
+
+## ✅ Checklist — Before Submitting Any Code
+
+The agent must silently verify every item before outputting code:
 
 - [ ] Identified all skill domains touched by this task
-- [ ] Read all relevant skill files in full
-- [ ] Followed the "one-paragraph brief" for each skill
+- [ ] Read all relevant `skill.md` files in full
+- [ ] Followed the "one-paragraph brief" for each loaded skill
 - [ ] Checked the "Common AI Blunders" section and avoided those patterns
 - [ ] Did NOT use `*` for CORS origin when credentials are involved
-- [ ] Did NOT store auth tokens in localStorage
+- [ ] Did NOT store auth tokens in `localStorage`
 - [ ] Did NOT return inconsistent response shapes across routes
-- [ ] Did NOT query inside a loop (N+1)
-- [ ] Did NOT put business logic in a route handler
+- [ ] Did NOT query inside a loop (N+1 problem)
+- [ ] Did NOT put business logic inside a route handler
 - [ ] Did NOT hardcode secrets — used environment variables
+- [ ] Did NOT use MD5 or SHA256 for password hashing — used bcrypt (cost ≥ 12)
+- [ ] Did NOT skip pagination on any list endpoint
+- [ ] Did NOT expose raw error messages or stack traces to the client
 
 ---
 
-*This rules file is the entry point for the agent. All skill details live in their respective `skill.md` files.*
+## 📁 Skill File Locations
+
+```
+skills/
+├── api-design-and-responses/skill.md
+├── authentication-security/skill.md
+├── backend-architecture/skill.md
+├── caching-and-background-jobs/skill.md
+├── cors-configuration/skill.md
+├── database-design/skill.md
+├── deployment-pipeline/skill.md
+├── file-uploads-and-storage/skill.md
+├── monorepo-vs-multirepo/skill.md
+├── performance-optimization/skill.md
+├── project-structure/skill.md
+└── security-hardening/skill.md
+```
+
+---
+
+*This rules file is the agent's entry point. Skill selection and loading is fully automatic — based entirely on what the user asks. No manual instruction is required from the user.*
